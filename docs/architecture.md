@@ -74,7 +74,7 @@ PostgreSQL não é dependência, alternativa nem caminho opcional. SQLite també
 | `npm run dev` | API com worker embutido e Vite |
 | `npm run dev:worker` | Worker em processo separado |
 
-Esses scripts ainda não existem. Ver [roadmap.md](roadmap.md).
+`npm run dev` sobe os dois primeiros. O worker separado ainda não está implementado. Ver [roadmap.md](roadmap.md).
 
 ## Decisões
 

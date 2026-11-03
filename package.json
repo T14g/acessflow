@@ -2,12 +2,24 @@
   "name": "accessflow",
   "version": "0.0.0",
   "private": true,
-  "description": "Fundação do AccessFlow. Sem dependências e sem scripts executáveis até o incremento 1.",
+  "description": "Gestão local de acessos fictícios, com o módulo AccessGuard.",
   "engines": {
     "node": ">=24"
   },
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"npm run dev -w @accessflow/api\" \"npm run dev -w @accessflow/web\"",
+    "dev:api": "npm run dev -w @accessflow/api",
+    "dev:web": "npm run dev -w @accessflow/web",
+    "db:migrate": "npm run db:migrate -w @accessflow/api",
+    "db:seed": "npm run db:seed -w @accessflow/api",
+    "test": "npm run test -w @accessflow/api",
+    "typecheck": "npm run typecheck -w @accessflow/contracts && npm run typecheck -w @accessflow/api && npm run typecheck -w @accessflow/web"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }

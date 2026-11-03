@@ -1,19 +1,21 @@
 # Roteiro
 
-A fundação e os contratos estão documentados. Nenhum comando sobe a aplicação ainda.
+A fundação, os contratos, a API e uma página local estão no repositório. O worker ainda não consome a outbox.
 
 ## Feito
 
 - Estrutura de pastas, limites e ADRs.
 - [Contratos](contracts.md): módulos, papéis, [modelo MySQL](data-model.md), [API](api.md) e [outbox](events.md).
+- Backend local: healthcheck, migração, seed, login e autorização.
+- Fluxo de IAM na API e numa página: catálogo, solicitação, aprovação, recusa e auditoria. A falha de provisionamento está coberta pela regra de estado. O conector entra na etapa seguinte.
 
 ## 1. Backend local
 
-Conexão com o MySQL 8.3, migrações reproduzíveis, seed fictício, `GET /health`, login de demonstração e checagem de papel. Testes de autenticação, validação e autorização. Banco `accessflow` e usuário limitado fora do Git.
+Concluído.
 
 ## 2. Fluxo de IAM
 
-Catálogo, solicitação com justificativa e prazo, aprovação e recusa, auditoria. Sem autoaprovação, sem papel vindo do cliente, sem solicitação aberta duplicada. Testes dos casos principais, inclusive falha de provisionamento quando o conector entrar na etapa seguinte. Até lá, a falha de provisionamento fica coberta pela regra de estado e pelo teste do conector na etapa 3.
+Concluído na API e na página inicial. Sem autoaprovação, sem papel vindo do cliente, sem solicitação aberta duplicada.
 
 ## 3. Outbox, worker e conector
 

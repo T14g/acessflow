@@ -2,7 +2,7 @@
 
 Prefixo `/api/v1`. JSON. Cookie de sessão `httpOnly` e `SameSite=Lax`. O papel vem da sessão no servidor. Corpo e query não escolhem o papel.
 
-Nada desta especificação está implementado.
+A API descrita abaixo está implementada, com uma exceção: o AccessGuard roda na mesma transação da criação da solicitação, para a fila já ficar utilizável antes do worker. A resposta 201 inclui a avaliação. O provisionamento continua pendente na outbox, no estado `approved`.
 
 ## Erros
 

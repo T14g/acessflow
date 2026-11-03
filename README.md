@@ -4,7 +4,7 @@ AccessFlow é um sistema **local e fictício** de gestão de acessos da empresa 
 
 O fluxo cobre pedido, avaliação, aprovação e provisionamento simulado, com API REST, banco relacional, eventos, testes e decisões de arquitetura registradas.
 
-A fundação e os contratos estão escritos: objetivo, limites, modelo de dados, API, eventos e decisões. A aplicação ainda não sobe. A especificação está em [docs/contracts.md](docs/contracts.md).
+A especificação está em [docs/contracts.md](docs/contracts.md). A API e uma página local já sobem. O worker e o conector simulado ainda não rodam: a aprovação grava o evento na outbox e para em `approved`.
 
 ## Limites
 
@@ -37,39 +37,55 @@ As decisões estão em [docs/architecture.md](docs/architecture.md) e em [docs/a
 - Git
 - MySQL 8.3 local em `127.0.0.1:3306`
 
-O banco `accessflow` e o usuário da aplicação ainda não existem. Eles entram na etapa de backend local e não usam a conta administrativa do HeidiSQL dentro do Git.
+Crie o banco e o usuário da aplicação no HeidiSQL, com a conta administrativa que você já usa. Essa senha não entra no Git. O usuário abaixo é só do laboratório:
+
+```sql
+CREATE DATABASE IF NOT EXISTS accessflow CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+CREATE USER IF NOT EXISTS 'accessflow'@'127.0.0.1' IDENTIFIED BY 'change-me';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, REFERENCES ON accessflow.* TO 'accessflow'@'127.0.0.1';
+FLUSH PRIVILEGES;
+```
 
 ## Variáveis previstas
 
-O arquivo [.env.example](.env.example) lista os nomes. Copie para `.env` somente quando a API existir. Valores de exemplo não são senhas reais.
+Copie [.env.example](.env.example) para `.env`. O valor `change-me` é a senha local do usuário `accessflow`, não a senha administrativa do MySQL.
 
 - `DATABASE_URL` — conexão do usuário limitado ao schema `accessflow`
 - `SESSION_SECRET` — segredo do cookie de sessão
-- `ACCESSFLOW_EMBED_WORKER` — `true` embute o worker na API durante o desenvolvimento
+- `ACCESSFLOW_EMBED_WORKER` — reservada para o worker. Hoje ele não sobe, então o valor fica `false`
 - `ACCESSFLOW_AI_ENABLED` — permanece `false`
 
-## Comandos planejados
+## Comandos
 
-Nenhum comando abaixo funciona ainda. Dependências, scripts e migrações entram na etapa de backend local.
+No PowerShell, nesta pasta:
 
 ```text
 npm install
+copy .env.example .env
 npm run db:migrate
 npm run db:seed
 npm run dev
-npm test
 ```
 
-Quando existirem, `npm run dev` sobe a API com o worker embutido e o Vite. `npm run dev:worker` sobe o worker num processo separado.
+`npm run dev` sobe a API em `http://127.0.0.1:3000` e a página em `http://localhost:5173`. Ctrl+C encerra os dois. `npm test` roda as regras sem MySQL e, se `DATABASE_URL` existir, os testes da API.
+
+O worker ainda não sobe. O AccessGuard roda dentro da criação da solicitação para a fila do gestor já funcionar. O evento continua sendo gravado na outbox.
 
 ## Credenciais de demonstração
 
-Ainda não há login. Na etapa de backend local, o seed criará usuários fictícios da Helios Indústria com senhas óbvias de demonstração, documentadas aqui. Elas não representam contas reais.
+Senha de todas: `Helios-demo-1`.
+
+| E-mail | Papel |
+| --- | --- |
+| ana.costa@helios.example | colaborador |
+| bruno.lima@helios.example | gestor da Ana e da Clara |
+| clara.nunes@helios.example | administrador |
+| diego.alves@helios.example | analista de segurança |
 
 ## Próximas etapas
 
-1. Backend local: migração, seed fictício, healthcheck, login e testes de autorização.
-2. Fluxo de IAM: catálogo, solicitação, aprovação, recusa e auditoria.
+1. Backend local: feito. Healthcheck, migração, seed, login e autorização.
+2. Fluxo de IAM: feito na API e numa página simples. Catálogo, solicitação, aprovação, recusa e auditoria.
 3. Outbox, worker em processo separado e conector simulado, idempotentes.
 4. Interface: fila do gestor, risco e trilha.
 5. Testes de integração do fluxo e testes isolados de segurança. O narrador de IA continua desligado.

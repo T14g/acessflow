@@ -2,5 +2,29 @@
   "name": "@accessflow/api",
   "version": "0.0.0",
   "private": true,
-  "description": "API Fastify do AccessFlow. Código de servidor entra no incremento 1."
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "start": "tsx src/main.ts",
+    "db:migrate": "tsx src/db/migrate.ts",
+    "db:seed": "tsx src/db/seed.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@accessflow/contracts": "0.0.0",
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.1.0",
+    "@fastify/helmet": "^13.0.2",
+    "dotenv": "^17.2.3",
+    "fastify": "^5.6.1",
+    "mysql2": "^3.15.2",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
 }
