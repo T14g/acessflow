@@ -1,0 +1,6 @@
+{
+  "name": "@accessflow/web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Frontend React do AccessFlow. Código de interface entra no incremento 1."
+}
