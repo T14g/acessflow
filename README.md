@@ -4,7 +4,7 @@ AccessFlow é um sistema **local e fictício** de gestão de acessos da empresa 
 
 O fluxo cobre pedido, avaliação, aprovação e provisionamento simulado, com API REST, banco relacional, eventos, testes e decisões de arquitetura registradas.
 
-A especificação está em [docs/contracts.md](docs/contracts.md). A API e uma página local já sobem. O worker e o conector simulado ainda não rodam: a aprovação grava o evento na outbox e para em `approved`.
+A especificação está em [docs/contracts.md](docs/contracts.md). A API, a página e o worker da outbox sobem em processos separados. A aprovação grava o evento e fica em `approved` até o worker chamar o conector simulado.
 
 ## Limites
 
@@ -65,11 +65,12 @@ copy .env.example .env
 npm run db:migrate
 npm run db:seed
 npm run dev
+npm run dev:worker
 ```
 
-`npm run dev` sobe a API em `http://127.0.0.1:3000` e a página em `http://localhost:5173`. Ctrl+C encerra os dois. `npm test` roda as regras sem MySQL e, se `DATABASE_URL` existir, os testes da API.
+`npm run dev` sobe a API em `http://127.0.0.1:3000` e a página em `http://localhost:5173`. Ctrl+C encerra os dois. `npm run dev:worker` sobe o consumidor da outbox em outro terminal; Ctrl+C encerra só ele. `npm test` roda as regras sem MySQL e, se `DATABASE_URL` existir, os testes da API e do worker.
 
-O worker ainda não sobe. O AccessGuard roda dentro da criação da solicitação para a fila do gestor já funcionar. O evento continua sendo gravado na outbox.
+O AccessGuard continua rodando dentro da criação da solicitação, para a fila do gestor funcionar mesmo com o worker parado. O worker é idempotente: processar de novo `provisioning.completed` não cria outra concessão. A justificativa que contém `recusa-simulada` faz o diretório fictício recusar o perfil.
 
 ## Credenciais de demonstração
 
@@ -86,7 +87,7 @@ Senha de todas: `Helios-demo-1`.
 
 1. Backend local: feito. Healthcheck, migração, seed, login e autorização.
 2. Fluxo de IAM: feito na API e numa página simples. Catálogo, solicitação, aprovação, recusa e auditoria.
-3. Outbox, worker em processo separado e conector simulado, idempotentes.
+3. Outbox, worker em processo separado e conector simulado: feito.
 4. Interface: fila do gestor, risco e trilha.
 5. Testes de integração do fluxo e testes isolados de segurança. O narrador de IA continua desligado.
 

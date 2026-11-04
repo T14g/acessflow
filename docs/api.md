@@ -2,7 +2,7 @@
 
 Prefixo `/api/v1`. JSON. Cookie de sessão `httpOnly` e `SameSite=Lax`. O papel vem da sessão no servidor. Corpo e query não escolhem o papel.
 
-A API descrita abaixo está implementada, com uma exceção: o AccessGuard roda na mesma transação da criação da solicitação, para a fila já ficar utilizável antes do worker. A resposta 201 inclui a avaliação. O provisionamento continua pendente na outbox, no estado `approved`.
+A API descrita abaixo está implementada. O AccessGuard roda na mesma transação da criação da solicitação, para a fila já ficar utilizável antes do worker. A resposta 201 inclui a avaliação. A aprovação deixa a solicitação em `approved`; o worker passa a `provisioned` ou `failed`.
 
 ## Erros
 
@@ -86,7 +86,7 @@ Não há endpoint para o cliente enviar o próprio papel.
 
 `justification` é obrigatória, até 1000 caracteres. `expiresAt` é opcional e precisa estar no futuro. `beneficiaryId` só é aceito se a sessão for `admin`; nos outros papéis o beneficiário é o usuário autenticado.
 
-Efeito, na mesma transação: grava a solicitação em `submitted`, grava `access_request.submitted` na outbox e um `audit_events`. A avaliação de risco ocorre no worker. A resposta 201 devolve a solicitação ainda sem nota.
+Efeito, na mesma transação: grava a solicitação em `submitted`, grava `access_request.submitted` na outbox, avalia o risco e devolve a nota no 201. O worker só repete a avaliação se a linha de `risk_assessments` não existir.
 
 `GET /api/v1/access-requests` — filtros `status` e `beneficiaryId`.
 
@@ -98,7 +98,7 @@ Efeito, na mesma transação: grava a solicitação em `submitted`, grava `acces
 
 `POST /api/v1/access-requests/:id/approve`
 
-Sem corpo. Só `manager` do beneficiário, ou `admin`. O aprovador não pode ser o solicitante nem o beneficiário. Estado atual precisa ser `pending_approval`. Grava `access_request.approved` e o audit.
+Sem corpo. Só `manager` do beneficiário, ou `admin`. O aprovador não pode ser o solicitante nem o beneficiário. Estado atual precisa ser `pending_approval`. Grava `access_request.approved` e o audit. O worker consome esse evento, grava `provisioning.requested` e chama o conector simulado. A justificativa que contém `recusa-simulada` termina em `failed`, sem concessão.
 
 `POST /api/v1/access-requests/:id/reject`
 

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AccessFlow — Relatório 001 · Status em 4 nov 2026</title>
+  <style>
+    :root {
+      --ink: #1c1915;
+      --muted: #5c564e;
+      --line: #e4ddd2;
+      --paper: #f7f3ec;
+      --card: #fffdf9;
+      --accent: #0f6e6e;
+      --accent-soft: #e5f3f2;
+      --warn: #8a4b12;
+      --warn-soft: #f8ecdf;
+      --ok: #1d6b3a;
+      --ok-soft: #e5f4ea;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 17px/1.55 "Segoe UI", Candara, sans-serif;
+    }
+    header {
+      background: #17211f;
+      color: #f4efe6;
+      padding: 48px 24px 36px;
+    }
+    header .wrap, main { max-width: 860px; margin: 0 auto; }
+    .kicker {
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: #9dccc8;
+      margin: 0 0 12px;
+    }
+    h1 { font-size: 40px; line-height: 1.1; margin: 0 0 12px; font-weight: 650; }
+    header p { margin: 0; max-width: 62ch; color: #d9d3c8; }
+    main { padding: 36px 24px 72px; }
+    h2 { font-size: 26px; margin: 40px 0 12px; }
+    h3 { font-size: 18px; margin: 24px 0 8px; }
+    p { margin: 0 0 12px; }
+    a { color: var(--accent); }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .pill {
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 13px;
+      color: #efe8dc;
+    }
+    .grid { display: grid; gap: 12px; }
+    @media (min-width: 720px) {
+      .grid.two { grid-template-columns: 1fr 1fr; }
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    .card h3 { margin-top: 0; }
+    .card.ok { background: var(--ok-soft); border-color: #c6e6d0; }
+    .card.warn { background: var(--warn-soft); border-color: #f0d7bf; }
+    .card.ok h3 { color: var(--ok); }
+    .card.warn h3 { color: var(--warn); }
+    ul { margin: 0; padding-left: 1.2em; }
+    li + li { margin-top: 6px; }
+    table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 14px; overflow: hidden; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); background: #fbf8f3; }
+    code, .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: 0.92em; }
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin: 16px 0 8px;
+    }
+    .node {
+      background: var(--accent-soft);
+      color: #0c4f4f;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-weight: 650;
+    }
+    .arrow { color: var(--muted); }
+    .note { color: var(--muted); font-size: 15px; }
+    footer { color: var(--muted); font-size: 14px; margin-top: 36px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <p class="kicker">Relatório 001 · status-report</p>
+      <h1>AccessFlow em 4 de novembro de 2026</h1>
+      <p>Laboratório local de gestão de acessos da empresa fictícia Helios Indústria. O módulo AccessGuard calcula o risco com regras fixas, sem rede e sem chave de IA.</p>
+      <div class="meta">
+        <span class="pill">MySQL 8.3 local</span>
+        <span class="pill">API, página e worker</span>
+        <span class="pill">16 testes passando</span>
+        <span class="pill">Worker ainda sem commit</span>
+      </div>
+    </div>
+  </header>
+  <main>
+    <h2>Onde o projeto está</h2>
+    <div class="grid two">
+      <article class="card ok">
+        <h3>Já funciona</h3>
+        <p>Dá para subir a API e a página, entrar com um usuário fictício, pedir um perfil, aprovar ou recusar, e deixar o worker gravar a concessão no diretório simulado.</p>
+      </article>
+      <article class="card warn">
+        <h3>Ainda não</h3>
+        <p>A tela é uma página só. Não há fila dedicada do gestor, detalhe da nota nem trilha visual. O narrador de IA continua desligado. O código do worker ainda não foi commitado.</p>
+      </article>
+    </div>
+    <p class="note">O plano em PDF tem cinco páginas e corta no meio do prompt 5. Os prompts 1 a 4 estão feitos. O prompt 5, outbox e worker, está implementado a partir do contrato em <span class="mono">docs/events.md</span>. Não há prompt 6 nesse PDF.</p>
+
+    <h2>O que já funciona</h2>
+    <table>
+      <thead>
+        <tr><th>Peça</th><th>Estado</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Banco <span class="mono">accessflow</span></td>
+          <td>Criado no MySQL desta máquina. A migração <span class="mono">001_init.sql</span> e o seed da Helios já rodaram. O healthcheck responde <span class="mono">database: up</span> quando a API está no ar com o <span class="mono">.env</span> atual.</td>
+        </tr>
+        <tr>
+          <td>Login</td>
+          <td>Cookie <span class="mono">httpOnly</span>. Senha com scrypt. Papel vem da sessão, não do corpo da requisição. Senha errada não revela se o e-mail existe.</td>
+        </tr>
+        <tr>
+          <td>Catálogo e pedido</td>
+          <td>Sistemas ERP Fiscal e Folha, perfis de consulta e perfis privilegiados. Justificativa obrigatória. Pedido aberto duplicado e perfil já ativo são recusados.</td>
+        </tr>
+        <tr>
+          <td>AccessGuard</td>
+          <td>Roda na mesma transação da criação. Devolve nota, recomendação e alertas. Conflito de segregação ou perfil já ativo recusa. Perfil privilegiado exige pessoa, e nunca provisiona sozinho.</td>
+        </tr>
+        <tr>
+          <td>Aprovação</td>
+          <td>Gestor do beneficiário ou administrador. Autoaprovação proibida. Analista não aprova. Recusa exige justificativa. A API deixa o pedido em <span class="mono">approved</span> e grava o evento.</td>
+        </tr>
+        <tr>
+          <td>Worker e conector</td>
+          <td>Processo separado. Sucesso cria concessão e membership fictícia e vai a <span class="mono">provisioned</span>. A mesma mensagem de novo não cria outra concessão. Justificativa com <span class="mono">recusa-simulada</span> termina em <span class="mono">failed</span>, sem concessão.</td>
+        </tr>
+        <tr>
+          <td>Página</td>
+          <td>Login, nova solicitação, lista com nota de risco, aprovar e recusar. Endereço <span class="mono">http://localhost:5173</span>.</td>
+        </tr>
+        <tr>
+          <td>API além da página</td>
+          <td>Usuários, concessões, revogação, alertas e auditoria existem na API. A página ainda não mostra essas telas.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Contas de demonstração</h3>
+    <p>Senha de todas: <span class="mono">Helios-demo-1</span>.</p>
+    <ul>
+      <li><span class="mono">ana.costa@helios.example</span> — colaborador</li>
+      <li><span class="mono">bruno.lima@helios.example</span> — gestor da Ana e da Clara</li>
+      <li><span class="mono">clara.nunes@helios.example</span> — administrador</li>
+      <li><span class="mono">diego.alves@helios.example</span> — analista de segurança</li>
+    </ul>
+
+    <h2>Arquitetura</h2>
+    <p>Monólito modular. Um repositório, uma API Fastify organizada por módulos, uma página React e um worker Node. Não há microserviços, Redis, Kafka, Docker nem diretório real.</p>
+    <div class="flow" aria-label="Fluxo dos processos">
+      <span class="node">Página Vite</span>
+      <span class="arrow">→</span>
+      <span class="node">API :3000</span>
+      <span class="arrow">→</span>
+      <span class="node">MySQL accessflow</span>
+      <span class="arrow">→</span>
+      <span class="node">outbox_events</span>
+      <span class="arrow">→</span>
+      <span class="node">Worker</span>
+      <span class="arrow">→</span>
+      <span class="node">Diretório simulado</span>
+    </div>
+    <p>A outbox é a tabela <span class="mono">outbox_events</span>. A mudança de negócio e o evento entram na mesma transação. Se o commit falha, não sobra evento. Se o processo cai depois do commit, a linha continua <span class="mono">pending</span>.</p>
+    <p>O worker reserva essas linhas com <span class="mono">SELECT … FOR UPDATE SKIP LOCKED</span>, chama o conector e grava concessão, membership e auditoria. Dois workers não pegam a mesma linha. Erro técnico volta a linha para <span class="mono">pending</span>, com espera que dobra até 15 minutos, no máximo 8 vezes. Recusa do diretório fictício não entra nessa retentativa.</p>
+
+    <h3>Módulos da API</h3>
+    <ul>
+      <li><span class="mono">identity</span> — pessoas fictícias, papéis e sessão</li>
+      <li><span class="mono">catalog</span> — sistemas, perfis privilegiados e pares de segregação</li>
+      <li><span class="mono">access-requests</span> — pedido, aprovação, recusa e revogação</li>
+      <li><span class="mono">access-guard</span> — regras de risco; não chama o conector</li>
+      <li><span class="mono">provisioning</span> — conector que escreve no diretório simulado</li>
+      <li><span class="mono">audit</span> — trilha só de inclusão</li>
+      <li><span class="mono">outbox</span> — gravação e consumo do evento</li>
+    </ul>
+    <p>Os esquemas Zod ficam em <span class="mono">packages/contracts</span>. A página e a API importam o mesmo contrato de login.</p>
+
+    <h2>Decisões</h2>
+    <table>
+      <thead>
+        <tr><th>Decisão</th><th>Por quê</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>MySQL 8.3, sem PostgreSQL</td>
+          <td>O PDF pedia PostgreSQL. Nesta máquina o que existe é o MySQL 8.3, e o Postgres ficou de fora de propósito. Ids são <span class="mono">CHAR(36)</span> gerados na aplicação. Payload do evento é coluna <span class="mono">JSON</span>. Tabelas InnoDB, sem ORM.</td>
+        </tr>
+        <tr>
+          <td>Usuário <span class="mono">accessflow</span> em <span class="mono">localhost</span> e em <span class="mono">127.0.0.1</span></td>
+          <td>O cliente Node se apresenta como <span class="mono">localhost</span> mesmo apontando para <span class="mono">127.0.0.1</span>. Uma conta só em <span class="mono">127.0.0.1</span> era recusada. A senha fica no <span class="mono">.env</span>, que não entra no Git.</td>
+        </tr>
+        <tr>
+          <td>AccessGuard dentro da criação do pedido</td>
+          <td>O contrato deixa a avaliação para o worker. A página do gestor precisa da nota mesmo com o worker parado, então a API avalia na mesma transação. O worker só repete a avaliação se a linha ainda não existir.</td>
+        </tr>
+        <tr>
+          <td>Worker em processo separado</td>
+          <td><span class="mono">npm run dev</span> sobe só API e Vite. <span class="mono">npm run dev:worker</span> sobe o consumidor. O flag <span class="mono">ACCESSFLOW_EMBED_WORKER</span> continua <span class="mono">false</span> para não manter três processos no notebook. O código do consumo é um só, em <span class="mono">apps/api/src/modules/outbox/worker.ts</span>.</td>
+        </tr>
+        <tr>
+          <td>Marcador <span class="mono">recusa-simulada</span></td>
+          <td>O PDF cortou antes de dizer como o conector falha. A justificativa com esse texto faz o diretório fictício recusar. Não é uma rota vulnerável: é o jeito explícito de demonstrar <span class="mono">failed</span> sem concessão.</td>
+        </tr>
+        <tr>
+          <td>Quatro papéis, sessão no servidor</td>
+          <td>Colaborador, gestor, administrador e analista. O analista lê e não aprova. Ninguém aprova o próprio pedido. Um campo <span class="mono">role</span> enviado pelo browser é ignorado.</td>
+        </tr>
+        <tr>
+          <td>IA desligada</td>
+          <td>A decisão de risco é determinística. Sem chave da OpenAI o fluxo inteiro continua válido.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>As decisões registradas no repositório estão em <span class="mono">docs/adr</span>, da 0001 à 0007: monólito modular, só MySQL, outbox, AccessGuard determinístico, diretório simulado, sem vulnerabilidade ativa e papéis da aplicação.</p>
+
+    <h2>Como ver funcionando</h2>
+    <p>Nada está rodando agora. A API e o Vite foram encerrados de propósito. O serviço MySQL do Windows continua ativo.</p>
+    <p>No PowerShell, na pasta do projeto, em dois terminais:</p>
+    <div class="card">
+      <p><span class="mono">npm run dev</span><br>API em <span class="mono">http://127.0.0.1:3000</span> e página em <span class="mono">http://localhost:5173</span>. A raiz da API não tem página: <span class="mono">GET /</span> responde 404. O healthcheck é <span class="mono">GET /health</span>.</p>
+      <p><span class="mono">npm run dev:worker</span><br>Consome a outbox. Ctrl+C encerra só esse processo.</p>
+    </div>
+    <p>Verificação feita nesta etapa: <span class="mono">npm test</span> com 16 testes, inclusive provisionar uma vez e recusar com <span class="mono">recusa-simulada</span>. <span class="mono">npm run typecheck</span> passou.</p>
+
+    <h2>Git</h2>
+    <ul>
+      <li><span class="mono">75cd897</span> — fundação e contratos</li>
+      <li><span class="mono">cd2bf9a</span> — API, página, migração e fluxo de acesso</li>
+      <li>O worker, o conector, os testes novos e os ajustes de documentação estão no disco e ainda não têm commit.</li>
+    </ul>
+
+    <h2>Próximo passo</h2>
+    <p>A etapa 4 do roteiro: uma interface da fila do gestor, com o detalhe da nota do AccessGuard e a trilha de auditoria. A API dessas leituras já existe. A página atual só lista solicitações e decide aprovação ou recusa.</p>
+
+    <footer>
+      Primeiro documento da pasta <span class="mono">status-report</span>. Gerado em 4 de novembro de 2026. Dados e empresas deste laboratório são fictícios.
+    </footer>
+  </main>
+</body>
+</html>

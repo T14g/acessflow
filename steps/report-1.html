@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AccessFlow — Passos, relatório 1</title>
+  <style>
+    :root {
+      --ink: #1c1915;
+      --muted: #5c564e;
+      --line: #e4ddd2;
+      --paper: #f7f3ec;
+      --card: #fffdf9;
+      --accent: #0f6e6e;
+      --soft: #e5f3f2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 18px/1.6 "Segoe UI", Candara, sans-serif;
+    }
+    header { background: #17211f; color: #f4efe6; padding: 46px 24px 34px; }
+    header .wrap, main { max-width: 880px; margin: 0 auto; }
+    .kicker { letter-spacing: 0.14em; text-transform: uppercase; font-size: 12px; color: #9dccc8; margin: 0 0 10px; }
+    h1 { font-size: 38px; line-height: 1.12; margin: 0 0 12px; }
+    header p { margin: 0; color: #d9d3c8; max-width: 68ch; }
+    main { padding: 32px 24px 80px; }
+    h2 { font-size: 28px; margin: 42px 0 10px; }
+    h3 { font-size: 20px; margin: 26px 0 8px; }
+    p { margin: 0 0 12px; }
+    ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+    ol.steps > li {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px 14px 72px;
+      margin: 0 0 12px;
+      position: relative;
+    }
+    ol.steps > li::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--soft);
+      color: #0c4f4f;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+    }
+    code, .file {
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 0.9em;
+      background: #f3eee6;
+      padding: 0 4px;
+      border-radius: 4px;
+    }
+    ul { margin: 8px 0 0; padding-left: 1.2em; }
+    li + li { margin-top: 6px; }
+    table { width: 100%; border-collapse: collapse; background: var(--card); }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); background: #fbf8f3; }
+    .lane { display: grid; gap: 10px; margin: 14px 0; }
+    @media (min-width: 740px) { .lane { grid-template-columns: 1fr 1fr; } }
+    .box { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+    .box h3 { margin-top: 0; }
+    .send { border-top: 4px solid #0f6e6e; }
+    .hear { border-top: 4px solid #b45309; }
+    .note { color: var(--muted); }
+    footer { color: var(--muted); font-size: 14px; margin-top: 36px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <p class="kicker">steps · report-1</p>
+      <h1>Como o AccessFlow foi montado, em ordem</h1>
+      <p>Texto para quem está começando. Cada passo diz o que entrou no projeto e qual arquivo abrir para ver isso com os próprios olhos.</p>
+    </div>
+  </header>
+  <main>
+    <h2>A ideia em uma frase</h2>
+    <p>Uma pessoa pede acesso a um sistema fictício. A API anota o pedido e deixa um recado numa tabela. Outro programa, o worker, lê esse recado e conclui o acesso num diretório que também é só uma tabela. Nada disso sai do computador. A empresa Helios e as pessoas Ana, Bruno, Clara e Diego são inventadas.</p>
+
+    <h2>O que já temos</h2>
+    <ul>
+      <li>Documentação do desenho, em <span class="file">docs/</span>.</li>
+      <li>Banco MySQL <span class="file">accessflow</span>, com tabelas e quatro usuários de demonstração. Senha de todos: <span class="file">Helios-demo-1</span>.</li>
+      <li>API em <span class="file">http://127.0.0.1:3000</span>. A página fica em <span class="file">http://localhost:5173</span>. A raiz da API não é uma tela; o teste de vida é <span class="file">/health</span>.</li>
+      <li>Página simples: entrar, pedir um perfil, ver a nota de risco, aprovar ou recusar, sair.</li>
+      <li>Worker separado, que transforma uma aprovação em concessão simulada.</li>
+      <li>Testes automáticos da API e do conector. O comando é <span class="file">npm test</span>.</li>
+    </ul>
+    <p class="note">Dois commits já existem: a fundação (<span class="file">75cd897</span>) e a API com a página (<span class="file">cd2bf9a</span>). O worker e o ajuste do botão Sair estão no disco e ainda não foram commitados.</p>
+
+    <h2>Passo a passo do que foi feito</h2>
+    <ol class="steps">
+      <li>
+        <h3>Olhar a máquina antes de escolher ferramenta</h3>
+        <p>O PDF do plano pedia PostgreSQL. Nesta máquina o banco instalado é o MySQL 8.3, com o HeidiSQL para enxergar as tabelas. A decisão foi usar só esse MySQL. PostgreSQL, Docker e serviços pagos ficaram de fora.</p>
+        <p>Abra <span class="file">docs/adr/0002-mysql-only.md</span>.</p>
+      </li>
+      <li>
+        <h3>Escrever o plano antes do código</h3>
+        <p>Primeiro entrou a pasta, o README e as decisões. Ainda não havia tela nem servidor. O objetivo era um laboratório local de gestão de acessos, com um módulo de risco chamado AccessGuard.</p>
+        <p>Abra <span class="file">README.md</span>, <span class="file">docs/architecture.md</span> e a pasta <span class="file">docs/adr/</span>.</p>
+      </li>
+      <li>
+        <h3>Desenhar o contrato, ainda sem ligar o servidor</h3>
+        <p>Aqui ficaram combinados os papéis, as tabelas, os endereços da API e a lista de eventos. Papéis: colaborador, gestor, administrador e analista de segurança. O analista olha. Quem aprova é o gestor do beneficiário, ou o administrador. Ninguém aprova o próprio pedido.</p>
+        <p>Abra <span class="file">docs/contracts.md</span>, <span class="file">docs/data-model.md</span>, <span class="file">docs/api.md</span> e <span class="file">docs/events.md</span>.</p>
+      </li>
+      <li>
+        <h3>Criar o banco vazio e o usuário da aplicação</h3>
+        <p>No HeidiSQL, com a conta administrativa, foi criado o banco <span class="file">accessflow</span>. O programa não usa essa conta administrativa. Ele entra com o usuário <span class="file">accessflow</span>. No Windows o MySQL viu a conexão como <span class="file">localhost</span>, então esse usuário precisou existir para <span class="file">localhost</span> e para <span class="file">127.0.0.1</span>. A senha mora só no arquivo <span class="file">.env</span>, que o Git ignora.</p>
+        <p>Abra <span class="file">.env.example</span> para ver os nomes das variáveis, sem a senha real. O <span class="file">.env</span> é a cópia local.</p>
+      </li>
+      <li>
+        <h3>Criar as tabelas com a migração</h3>
+        <p>Migração é um arquivo SQL que cria a estrutura: usuários, sessões, sistemas, perfis, pedidos, concessões, auditoria e a tabela de recados <span class="file">outbox_events</span>. O comando <span class="file">npm run db:migrate</span> aplica esse arquivo uma vez e anota o nome dele, para não criar as mesmas tabelas de novo.</p>
+        <p>Abra <span class="file">db/migrations/001_init.sql</span>. A tabela dos recados começa em <span class="file">outbox_events</span>. O programa que lê o arquivo está em <span class="file">apps/api/src/db/migrate.ts</span>.</p>
+      </li>
+      <li>
+        <h3>Encher o banco com gente fictícia</h3>
+        <p>O seed é a carga inicial de demonstração: Ana, Bruno, Clara, Diego, os sistemas ERP Fiscal e Folha, e um conflito de segregação entre lançamento fiscal e pagamento da folha. Pode rodar de novo sem duplicar as pessoas.</p>
+        <p>Abra <span class="file">apps/api/src/db/seed.ts</span>.</p>
+      </li>
+      <li>
+        <h3>Subir a API e a página</h3>
+        <p><span class="file">npm run dev</span> sobe dois processos ao mesmo tempo. A API escuta em <span class="file">127.0.0.1:3000</span>. A página Vite escuta em <span class="file">localhost:5173</span> e encaminha os caminhos <span class="file">/api</span> e <span class="file">/health</span> para a API. A página não fala com o MySQL. Quem fala com o banco é a API.</p>
+        <p>Abra <span class="file">package.json</span> na raiz, o script <span class="file">dev</span>. A entrada da API é <span class="file">apps/api/src/main.ts</span>. As rotas estão em <span class="file">apps/api/src/app.ts</span>. A página está em <span class="file">apps/web/src/App.tsx</span>. O encaminhamento está em <span class="file">apps/web/vite.config.ts</span>.</p>
+      </li>
+      <li>
+        <h3>Login, sessão e papéis</h3>
+        <p>A senha é guardada com scrypt, não em texto puro. O login devolve um cookie que o JavaScript da página não consegue ler. Nas próximas chamadas a API lê esse cookie e descobre quem é a pessoa. Se o formulário mandar um campo <span class="file">role: admin</span>, a API ignora. O papel vem da linha do usuário no banco.</p>
+        <p>Abra <span class="file">apps/api/src/password.ts</span> e <span class="file">apps/api/src/modules/identity/service.ts</span>. O botão Entrar e o botão Sair estão em <span class="file">apps/web/src/App.tsx</span>.</p>
+      </li>
+      <li>
+        <h3>Pedido, risco e decisão humana</h3>
+        <p>Ana escolhe um perfil e escreve uma justificativa. Na mesma ida ao banco, a API grava o pedido, calcula o risco e deixa o pedido em espera de aprovação, ou recusado se a regra for dura. Perfil privilegiado não se concede sozinho. Conflito com um acesso já ativo recusa. Bruno, gestor da Ana, aprova ou recusa. Recusa sem texto é rejeitada. Ana não consegue aprovar o próprio pedido.</p>
+        <p>Abra <span class="file">apps/api/src/modules/access-guard/rules.ts</span> para as regras. O fluxo do pedido está em <span class="file">apps/api/src/modules/access-requests/service.ts</span>. Os estados permitidos estão em <span class="file">apps/api/src/modules/access-requests/transitions.ts</span>.</p>
+      </li>
+      <li>
+        <h3>Deixar o recado na outbox</h3>
+        <p>Outbox, nesta aplicação, é a tabela <span class="file">outbox_events</span>. Não é um programa. É uma fila dentro do próprio MySQL. Quando a API grava “aprovado”, ela grava também uma linha de evento, no mesmo commit. Se o commit falha, não fica aprovação sem recado, nem recado sem aprovação. Se a API desliga depois, o recado continua <span class="file">pending</span>.</p>
+        <p>Quem escreve o recado é a função <span class="file">recordSideEffects</span>, no arquivo <span class="file">apps/api/src/modules/access-requests/service.ts</span>. Ela insere em <span class="file">audit_events</span> e em <span class="file">outbox_events</span>.</p>
+      </li>
+      <li>
+        <h3>Criar o worker, o programa que escuta a fila</h3>
+        <p>O worker é um segundo programa Node. Ele não tem tela. Ele acorda, procura linhas <span class="file">pending</span> e faz o trabalho que a API só anunciou. O comando é <span class="file">npm run dev:worker</span>, noutro terminal. Ctrl+C encerra só ele. <span class="file">npm run dev</span> não liga o worker, para o notebook não ficar com três processos o tempo todo.</p>
+        <p>Abra <span class="file">apps/worker/src/main.ts</span>. Esse arquivo só carrega <span class="file">apps/api/src/worker-main.ts</span>. A lógica está em <span class="file">apps/api/src/modules/outbox/worker.ts</span>. O conector simulado está em <span class="file">apps/api/src/modules/provisioning/connector.ts</span>.</p>
+      </li>
+      <li>
+        <h3>Fazer o Sair voltar para o login</h3>
+        <p>O botão Sair já apagava a sessão no servidor. A página, porém, guardava na memória “ainda existe um usuário”. Por isso a tela não ia para o login. O ajuste joga fora essa memória quando o logout dá certo.</p>
+        <p>O trecho está no <span class="file">onSuccess</span> do logout, em <span class="file">apps/web/src/App.tsx</span>.</p>
+      </li>
+    </ol>
+
+    <h2>O que é um evento, quem manda e quem escuta</h2>
+    <p>Um evento é uma frase curta gravada no banco: “este pedido foi aprovado”. Não é um e-mail e não atravessa a internet. É uma linha com tipo, um identificador e um JSON pequeno, sem senha.</p>
+    <div class="lane">
+      <article class="box send">
+        <h3>Quem manda</h3>
+        <p>A API, dentro da mesma transação da mudança. O arquivo é <span class="file">apps/api/src/modules/access-requests/service.ts</span>.</p>
+        <ul>
+          <li>Criar pedido: <span class="file">access_request.submitted</span> e <span class="file">access_request.risk_assessed</span>.</li>
+          <li>Aprovar: <span class="file">access_request.approved</span>.</li>
+          <li>Recusar: <span class="file">access_request.rejected</span>.</li>
+          <li>Revogar uma concessão: <span class="file">access_grant.revoked</span>.</li>
+        </ul>
+      </article>
+      <article class="box hear">
+        <h3>Quem escuta</h3>
+        <p>O worker. A função <span class="file">claim</span> busca uma linha <span class="file">pending</span>. A função <span class="file">dispatch</span> escolhe o que fazer pelo texto do evento. As duas estão em <span class="file">apps/api/src/modules/outbox/worker.ts</span>.</p>
+        <ul>
+          <li><span class="file">approved</span> marca o pedido como em provisionamento e grava <span class="file">provisioning.requested</span>.</li>
+          <li><span class="file">provisioning.requested</span> chama o conector.</li>
+          <li>Sucesso grava <span class="file">provisioning.completed</span> e cria a concessão.</li>
+          <li>A frase <span class="file">recusa-simulada</span> na justificativa grava <span class="file">provisioning.failed</span> e o pedido fica <span class="file">failed</span>, sem concessão.</li>
+        </ul>
+      </article>
+    </div>
+    <p>O worker também escreve eventos novos. Ou seja: a API manda o primeiro recado, o worker escuta e, para continuar a corrente, manda o recado seguinte na mesma tabela. A lista completa dos nomes está em <span class="file">docs/events.md</span> e de novo em <span class="file">packages/contracts/src/index.ts</span>, na constante <span class="file">eventTypes</span>.</p>
+    <p>Para ver um recado de verdade, no HeidiSQL abra o banco <span class="file">accessflow</span>, tabela <span class="file">outbox_events</span>. A coluna <span class="file">event_type</span> é o nome. A coluna <span class="file">status</span> diz se ainda está <span class="file">pending</span>, se o worker pegou (<span class="file">processing</span>), se terminou (<span class="file">processed</span>) ou se desistiu (<span class="file">failed</span>).</p>
+
+    <h2>O que é o worker, sem jargão</h2>
+    <p>Pense num balcão e num estoque. O balcão é a API: a pessoa pede, o balcão anota “aprovado” e coloca uma ficha numa caixa. A caixa é a tabela outbox. O estoque é o worker: de tempos em tempos alguém abre a caixa, lê uma ficha e vai até a prateleira colocar o acesso. A prateleira, aqui, são as tabelas <span class="file">access_grants</span>, <span class="file">directory_accounts</span> e <span class="file">directory_memberships</span>. Não existe Active Directory.</p>
+    <p>Se o estoque estiver fechado, o balcão continua funcionando. O pedido fica <span class="file">approved</span> e a ficha espera. Quando você roda <span class="file">npm run dev:worker</span>, as fichas antigas são lidas. Ler a mesma ficha duas vezes não coloca dois acessos na prateleira: a concessão usa o pedido como chave única.</p>
+    <p>Se uma ficha dá erro técnico, ela volta para a caixa. A espera dobra a cada tentativa, até 15 minutos, no máximo 8 vezes. A recusa combinada do diretório fictício não fica nesse ciclo: ela encerra o pedido como falha.</p>
+
+    <h2>Um clique, do começo ao fim</h2>
+    <ol>
+      <li>Ana abre <span class="file">http://localhost:5173</span>, entra e pede o perfil Consulta fiscal. Isso está em <span class="file">apps/web/src/App.tsx</span>, função que chama <span class="file">POST /api/v1/access-requests</span>.</li>
+      <li>O Vite repassa a chamada para a API. Veja o proxy em <span class="file">apps/web/vite.config.ts</span>.</li>
+      <li>A rota em <span class="file">apps/api/src/app.ts</span> chama <span class="file">createRequest</span>.</li>
+      <li><span class="file">createRequest</span> grava o pedido, roda <span class="file">assessRisk</span> e insere os eventos. O pedido aparece para o Bruno como <span class="file">pending_approval</span>, com uma nota.</li>
+      <li>Bruno clica em Aprovar. A API grava <span class="file">approved</span> e o evento <span class="file">access_request.approved</span>.</li>
+      <li>Se o worker estiver ligado, ele lê esse evento, pede o provisionamento e grava a concessão. O pedido passa a <span class="file">provisioned</span>.</li>
+      <li>Sair chama <span class="file">POST /api/v1/auth/logout</span>, apaga a sessão e limpa a memória da página, que volta ao login.</li>
+    </ol>
+
+    <h2>Onde olhar, por curiosidade</h2>
+    <table>
+      <thead>
+        <tr><th>Pergunta</th><th>Arquivo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>O que o projeto promete</td><td><span class="file">README.md</span></td></tr>
+        <tr><td>Desenho dos processos</td><td><span class="file">docs/architecture.md</span></td></tr>
+        <tr><td>Nomes dos eventos e a fila</td><td><span class="file">docs/events.md</span></td></tr>
+        <tr><td>Formato das tabelas</td><td><span class="file">db/migrations/001_init.sql</span></td></tr>
+        <tr><td>Pessoas e sistemas de mentira</td><td><span class="file">apps/api/src/db/seed.ts</span></td></tr>
+        <tr><td>Endereços HTTP</td><td><span class="file">apps/api/src/app.ts</span></td></tr>
+        <tr><td>Quem grava o evento</td><td><span class="file">apps/api/src/modules/access-requests/service.ts</span></td></tr>
+        <tr><td>Quem lê o evento</td><td><span class="file">apps/api/src/modules/outbox/worker.ts</span></td></tr>
+        <tr><td>Como o diretório fictício aceita ou recusa</td><td><span class="file">apps/api/src/modules/provisioning/connector.ts</span></td></tr>
+        <tr><td>A tela</td><td><span class="file">apps/web/src/App.tsx</span></td></tr>
+        <tr><td>O que os testes garantem</td><td><span class="file">apps/api/test/api.test.ts</span> e <span class="file">apps/api/test/connector.test.ts</span></td></tr>
+      </tbody>
+    </table>
+
+    <h2>O que esta etapa ainda não é</h2>
+    <p>A tela é uma página só. Ainda não há uma fila caprichada do gestor, uma ficha da nota de risco nem uma tela da trilha de auditoria. Essas leituras já existem na API. A etapa seguinte do roteiro é mostrá-las. O narrador de inteligência artificial continua desligado: a nota de risco nasce só das regras em <span class="file">rules.ts</span>.</p>
+
+    <footer>Relatório 1 da pasta <span class="file">steps</span>. 4 de novembro de 2026. Laboratório fictício, sem diretório real.</footer>
+  </main>
+</body>
+</html>

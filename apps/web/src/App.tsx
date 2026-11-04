@@ -127,7 +127,10 @@ function HomePage({ user }: { user: PublicUser }) {
   });
   const logout = useMutation({
     mutationFn: () => api("/api/v1/auth/logout", { method: "POST", body: "{}" }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["me"] }),
+    onSuccess: async () => {
+      await queryClient.cancelQueries({ queryKey: ["me"] });
+      queryClient.setQueryData(["me"], null);
+    },
   });
   const canDecide = user.role === "manager" || user.role === "admin";
 

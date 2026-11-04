@@ -1,13 +1,14 @@
 # Roteiro
 
-A fundação, os contratos, a API e uma página local estão no repositório. O worker ainda não consome a outbox.
+A fundação, os contratos, a API, uma página local e o worker da outbox estão no repositório.
 
 ## Feito
 
 - Estrutura de pastas, limites e ADRs.
 - [Contratos](contracts.md): módulos, papéis, [modelo MySQL](data-model.md), [API](api.md) e [outbox](events.md).
 - Backend local: healthcheck, migração, seed, login e autorização.
-- Fluxo de IAM na API e numa página: catálogo, solicitação, aprovação, recusa e auditoria. A falha de provisionamento está coberta pela regra de estado. O conector entra na etapa seguinte.
+- Fluxo de IAM na API e numa página: catálogo, solicitação, aprovação, recusa e auditoria.
+- Outbox, worker Node separado e conector simulado. Reprocessar a mesma mensagem não cria outra concessão.
 
 ## 1. Backend local
 
@@ -19,7 +20,7 @@ Concluído na API e na página inicial. Sem autoaprovação, sem papel vindo do 
 
 ## 3. Outbox, worker e conector
 
-Evento na mesma transação, worker Node idempotente, retentativa e diretório simulado. Processar a mesma mensagem de novo não cria outra concessão.
+Concluído. O comando é `npm run dev:worker`. A justificativa com `recusa-simulada` provoca a falha de negócio do diretório fictício.
 
 ## 4. Interface
 

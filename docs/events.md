@@ -50,7 +50,7 @@ Erro do handler incrementa `attempts`, grava `last_error` sem dados sensíveis e
 
 `failed` na outbox não apaga a linha. Uma ação administrativa futura pode reabrir; nesta etapa não há endpoint para isso.
 
-O conector simulado tem resultado explícito. Uma falha de negócio (diretório fictício recusa o perfil) grava `provisioning.failed` e não entra em retentativa infinita. Falha técnica (erro de transação) entra na retentativa.
+O conector simulado tem resultado explícito. Uma falha de negócio grava `provisioning.failed` e não entra em retentativa. O diretório fictício recusa o perfil quando a justificativa contém `recusa-simulada`. Falha técnica (erro de transação) entra na retentativa.
 
 ## Concorrência com a API
 

@@ -14,6 +14,7 @@
     "dev": "concurrently -n api,web -c blue,green \"npm run dev -w @accessflow/api\" \"npm run dev -w @accessflow/web\"",
     "dev:api": "npm run dev -w @accessflow/api",
     "dev:web": "npm run dev -w @accessflow/web",
+    "dev:worker": "npm run dev -w @accessflow/worker",
     "db:migrate": "npm run db:migrate -w @accessflow/api",
     "db:seed": "npm run db:seed -w @accessflow/api",
     "test": "npm run test -w @accessflow/api",

@@ -11,6 +11,7 @@ export type AppConfig = {
   sessionSecret: string;
   webOrigin: string;
   port: number;
+  embedWorker: boolean;
 };
 
 export function loadConfig(): AppConfig {
@@ -19,5 +20,6 @@ export function loadConfig(): AppConfig {
     sessionSecret: process.env.SESSION_SECRET || randomBytes(32).toString("hex"),
     webOrigin: process.env.WEB_ORIGIN || "http://localhost:5173",
     port: Number(process.env.PORT || 3000),
+    embedWorker: process.env.ACCESSFLOW_EMBED_WORKER === "true",
   };
 }

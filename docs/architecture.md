@@ -71,10 +71,10 @@ PostgreSQL não é dependência, alternativa nem caminho opcional. SQLite també
 
 | Comando planejado | O que sobe |
 | --- | --- |
-| `npm run dev` | API com worker embutido e Vite |
+| `npm run dev` | API e Vite. O worker só entra aqui se `ACCESSFLOW_EMBED_WORKER=true` |
 | `npm run dev:worker` | Worker em processo separado |
 
-`npm run dev` sobe os dois primeiros. O worker separado ainda não está implementado. Ver [roadmap.md](roadmap.md).
+`npm run dev` sobe a API e o Vite. O consumo da outbox fica no processo de `npm run dev:worker`, para não manter três processos no dia a dia. Ver [roadmap.md](roadmap.md).
 
 ## Decisões
 

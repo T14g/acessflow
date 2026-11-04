@@ -1,3 +1,3 @@
 # provisioning
 
-Conector local que grava concessões no diretório simulado. Contrato em `docs/events.md`. Implementação na etapa do worker.
+Conector local que grava concessões e memberships fictícias. A justificativa com `recusa-simulada` recusa o perfil sem criar concessão. Contrato em `docs/events.md`.
